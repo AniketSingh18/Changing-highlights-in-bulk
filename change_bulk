@@ -1,0 +1,111 @@
+# !pip install --user boto3==1.9.151
+# !pip install --user fitz==0.0.1.dev2
+# !pip install --user PyMuPDF==1.18.10
+
+import os
+import fitz
+# import boto3
+import requests
+from math import ceil
+import numpy as np
+import datetime as dt
+import time
+document_path = r'D:\downloadss\string_h\a.pdf'
+stream = bytearray(open(document_path, "rb").read())
+doc = fitz.open("document_path.pdf", stream)
+start= time.time()
+r={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+re=[]
+gre=[]
+yel=[]
+string_highlight_scheme={'red':{1:r,2:r,3:r,4:r,5:r},'yellow':{6:r,7:r,8:r,9:r,10:r},'green':{11:r,12:r,13:r,14:r,15:r}}
+n={}
+x={17,19,23}
+for i in x:
+    for j in range(16):
+        n[i*j]=[]
+for colour in string_highlight_scheme:
+     for smu_id in string_highlight_scheme[colour]:
+         for str_num in string_highlight_scheme[colour][smu_id]:
+            if colour == 'red':
+                n[17*smu_id].append(str_num)
+            if colour == 'yellow':
+                n[19*smu_id].append(str_num)
+            if colour == 'green':
+                n[23*smu_id].append(str_num)
+
+
+for smu_id in n:
+    for str_num in n[smu_id]:
+            if smu_id%17==0:
+                num=17
+                x=smu_id/17
+
+            elif smu_id%19==0:
+                num=19
+                x=smu_id/19
+
+            else:
+                num=23
+                x=smu_id/23
+
+            search_text_1 = str(int(x)) + '.' + str(int(str_num)) + "+"
+            search_text_2 = 'STRING ' + str(int(x)) + ' - ' + str(int(str_num)) +' '
+            for page in doc:
+                if num == 17:
+                    print('red')
+                    highlight_1 = page.search_for(search_text_1)
+                    print(search_text_1)
+                    print('highlight_1', highlight_1, type(highlight_1))
+                    highlight_2 = page.search_for(search_text_2)
+                    print(search_text_2)
+                    print('highlight_2', highlight_2, type(highlight_2))
+                    if highlight_1 != []:
+                        re.append(highlight_1)
+                    if highlight_1 != []:
+                        re.append(highlight_2)
+
+
+                if num == 23:
+                    print('green')
+                    highlight_1 = page.search_for(search_text_1)
+                    print(search_text_1)
+                    print('highlight_1', highlight_1, type(highlight_1))
+                    highlight_2 = page.search_for(search_text_2)
+                    print(search_text_2)
+                    print('highlight_2', highlight_2, type(highlight_2))
+                    if highlight_1 != []:
+                        gre.append(highlight_1)
+                    if highlight_2 != []:
+                        gre.append(highlight_2)
+
+                if num == 19:
+                    print('yellow')
+                    highlight_1 = page.search_for(search_text_1)
+                    print(search_text_1)
+                    print('highlight_1', highlight_1, type(highlight_1))
+                    highlight_2 = page.search_for(search_text_2)
+                    print(search_text_2)
+                    print('highlight_2', highlight_2, type(highlight_2))
+                    if highlight_1!=[]:
+                        yel.append(highlight_1)
+                    if highlight_2 != []:
+                        yel.append(highlight_2)
+for page in doc:
+    for val in re:
+        highlight = page.add_highlight_annot(val)
+        highlight.set_colors(colors= fitz.utils.getColor('red'))
+        highlight.update
+    for val in yel:
+        highlight = page.add_highlight_annot(val)
+        highlight.set_colors(colors= fitz.utils.getColor('yellow'))
+        highlight.update
+    for val in gre:
+        highlight = page.add_highlight_annot(val)
+        highlight.set_colors(colors= fitz.utils.getColor('green'))
+        highlight.update
+doc.write()
+end= time.time()
+print("Total time: ")
+print(end-start)
+doc.save('a' + '_coloured.pdf')
